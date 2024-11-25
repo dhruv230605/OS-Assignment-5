@@ -16,12 +16,12 @@ void demonstration(std::function<void()> && lambda) {
 // Thread Data Structure
 struct ThreadData {
     int id;
-    int start;
-    int end;
-    std::function<void(int)> singleLambda;
-    std::function<void(int, int)> doubleLambda;
-    int innerStart;
-    int innerEnd;
+    int start; //start for outer loop
+    int end; //end for inner loop
+    std::function<void(int)> singleLambda; //function for single loop lambda
+    std::function<void(int, int)> doubleLambda; //finction for double loop lambda
+    int innerStart; //start for inner loop
+    int innerEnd; //end for inner loop
 };
 
 // Single-loop thread function
@@ -48,11 +48,12 @@ void* doubleThreadFunction(void* arg) {
 void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numThreads) {
     if (numThreads <= 0) throw std::invalid_argument("threads cant be less than 1");
     
-    auto startTime = std::chrono::high_resolution_clock::now();
+    auto startTime = std::chrono::high_resolution_clock::now(); //starting timer for calculation of execution time
 
     int range = high - low;
-    int chunkSize = range / numThreads;
-    int remainder = range % numThreads;
+    int chunkSize = range / numThreads; //giving equivalent chunks to each thread
+    int remainder = range % numThreads; //remainder will have to be given to one pf the threads to ensure entire range is 
+    //being aptly distrbuted
 
     std::vector<pthread_t> threads(numThreads);
     std::vector<ThreadData> threadData(numThreads);
@@ -84,8 +85,8 @@ void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numT
         };
     }
 
-    auto endTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = endTime - startTime;
+    auto endTime = std::chrono::high_resolution_clock::now(); //ending timer
+    std::chrono::duration<double> elapsed = endTime - startTime; //execution time arithmetic
     std::cout << "Execution Time (Single-loop): " << elapsed.count() << " seconds\n";
 }
 
